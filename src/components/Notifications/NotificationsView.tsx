@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bell, AlertCircle, CheckCircle, Info, Wrench } from 'lucide-react';
 import { supabase, Notification } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
 export const NotificationsView: React.FC = () => {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { user } = useAuth();
 
@@ -59,16 +61,16 @@ export const NotificationsView: React.FC = () => {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Notifications</h1>
-        <p className="text-gray-600 mt-1">Stay updated with real-time alerts and updates</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('notifications')}</h1>
+          <p className="text-gray-600 mt-1">{t('stay_updated_with_alerts')}</p>
       </div>
 
       <div className="space-y-4">
         {notifications.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
             <Bell className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 font-medium">No notifications</p>
-            <p className="text-sm text-gray-500 mt-1">You're all caught up!</p>
+            <p className="text-gray-600 font-medium">{t('no_notifications')}</p>
+            <p className="text-sm text-gray-500 mt-1">{t('youre_all_caught_up')}</p>
           </div>
         ) : (
           notifications.map((notification) => (
@@ -97,7 +99,7 @@ export const NotificationsView: React.FC = () => {
                         className="flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
                       >
                         <CheckCircle className="w-4 h-4" />
-                        <span>Mark as read</span>
+	                        <span>{t('mark_as_read')}</span>
                       </button>
                     )}
                   </div>

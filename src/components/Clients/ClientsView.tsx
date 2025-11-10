@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Users, Plus, Mail, Phone, MapPin } from 'lucide-react';
 import { supabase, Client } from '../../lib/supabase';
 
 export const ClientsView: React.FC = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
 
   useEffect(() => {
@@ -22,12 +26,15 @@ export const ClientsView: React.FC = () => {
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Client Management</h1>
-          <p className="text-gray-600 mt-1">Manage your delivery clients and recipients</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('client_management')}</h1>
+          <p className="text-gray-600 mt-1">{t('manage_clients_and_recipients')}</p>
         </div>
-        <button className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+        <button
+          onClick={() => navigate('/clients/add')}
+          className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+        >
           <Plus className="w-5 h-5" />
-          <span>Add Client</span>
+          <span>{t('add_client')}</span>
         </button>
       </div>
 
@@ -35,8 +42,8 @@ export const ClientsView: React.FC = () => {
         {clients.length === 0 ? (
           <div className="col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
             <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 font-medium">No clients found</p>
-            <p className="text-sm text-gray-500 mt-1">Add your first client to get started</p>
+            <p className="text-gray-600 font-medium">{t('no_clients_found')}</p>
+            <p className="text-sm text-gray-500 mt-1">{t('add_first_client')}</p>
           </div>
         ) : (
           clients.map((client) => (
@@ -72,8 +79,8 @@ export const ClientsView: React.FC = () => {
               </div>
 
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                  View Details
+                <button onClick={() => navigate(`/clients/${client.id}`)} className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                  {t('view_details')}
                 </button>
               </div>
             </div>

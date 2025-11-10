@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Plus, MapPin, Clock, DollarSign, Truck } from 'lucide-react';
 import { supabase, Route, Vehicle, Driver } from '../../lib/supabase';
 
 export const RoutesPlanningView: React.FC = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [routes, setRoutes] = useState<Route[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -38,53 +42,45 @@ export const RoutesPlanningView: React.FC = () => {
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Route Planning</h1>
-          <p className="text-gray-600 mt-1">Create and optimize delivery routes</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('route_planning')}</h1>
+          <p className="text-gray-600 mt-1">{t('create_and_optimize_routes')}</p>
         </div>
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => navigate('/routes/create')} // Assumindo uma rota de criação
           className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
         >
           <Plus className="w-5 h-5" />
-          <span>Create Route</span>
+          <span>{t('create_route')}</span>
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
-        <div className="aspect-video bg-gray-100 rounded-t-xl flex items-center justify-center">
-          <div className="text-center">
-            <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 font-medium">Interactive Map View</p>
-            <p className="text-sm text-gray-500 mt-1">Route visualization and waypoint management</p>
-          </div>
-        </div>
-      </div>
+
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Routes</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t('recent_routes')}</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Route Name
+                  {t('route_name')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  {t('status')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Distance
+                  {t('distance')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Duration
+                  {t('duration')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fuel Cost
+                  {t('fuel_cost')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  {t('actions')}
                 </th>
               </tr>
             </thead>
@@ -92,7 +88,7 @@ export const RoutesPlanningView: React.FC = () => {
               {routes.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                    No routes found. Create your first route to get started.
+                    {t('no_routes_found')}
                   </td>
                 </tr>
               ) : (
@@ -106,15 +102,15 @@ export const RoutesPlanningView: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(route.status)}`}>
-                        {route.status}
+                        {t(route.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {route.total_distance_km.toFixed(1)} km
+                      {route.total_distance_km.toFixed(1)} {t('km')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 flex items-center">
                       <Clock className="w-4 h-4 text-gray-400 mr-2" />
-                      {route.estimated_duration_minutes} min
+                      {route.estimated_duration_minutes} {t('min')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div className="flex items-center">
@@ -123,7 +119,7 @@ export const RoutesPlanningView: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <button className="text-blue-600 hover:text-blue-800 font-medium">View Details</button>
+                      <button onClick={() => navigate(`/routes/${route.id}`)} className="text-blue-600 hover:text-blue-800 font-medium">{t('view_details')}</button>
                     </td>
                   </tr>
                 ))

@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Package, Clock, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Package, Clock, AlertCircle, CheckCircle, XCircle, MapPin } from 'lucide-react';
 import { supabase, Delivery } from '../../lib/supabase';
+import InteractiveMap from '../Map/InteractiveMap.tsx';
 
 export const DeliveriesView: React.FC = () => {
+  const { t } = useTranslation();
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [filter, setFilter] = useState<string>('all');
 
@@ -51,94 +54,104 @@ export const DeliveriesView: React.FC = () => {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Delivery Management</h1>
-        <p className="text-gray-600 mt-1">Track and manage all deliveries and pickups</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('delivery_management')}</h1>
+        <p className="text-gray-600 mt-1">{t('track_and_manage_deliveries')}</p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 p-6">
-        <div className="flex items-center space-x-4">
-          <span className="text-sm font-medium text-gray-700">Filter by status:</span>
-          {['all', 'pending', 'in_transit', 'delivered', 'delayed', 'failed'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilter(status)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                filter === status
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </button>
-          ))}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Coluna do Mapa */}
+        <div className="lg:col-span-1 h-[600px]">
+          <InteractiveMap />
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {deliveries.length === 0 ? (
-          <div className="col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-            <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 font-medium">No deliveries found</p>
-            <p className="text-sm text-gray-500 mt-1">Try adjusting your filters or create a new route with deliveries</p>
+        {/* Coluna de Filtros e Lista */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 p-6">
+            <div className="flex items-center space-x-4">
+              <span className="text-sm font-medium text-gray-700">{t('filter_by_status')}:</span>
+              {['all', 'pending', 'in_transit', 'delivered', 'delayed', 'failed'].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setFilter(status)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                    filter === status
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {t(status)}
+                </button>
+              ))}
+            </div>
           </div>
-        ) : (
-          deliveries.map((delivery) => (
-            <div key={delivery.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  {getStatusIcon(delivery.status)}
-                  <div>
-                    <h3 className="font-semibold text-gray-900">
-                      {delivery.type === 'delivery' ? 'Delivery' : 'Pickup'} #{delivery.id.slice(0, 8)}
-                    </h3>
-                    <span className={`text-xs ${getPriorityColor(delivery.priority)}`}>
-                      Priority: {delivery.priority}
+
+          <div className="grid grid-cols-1 gap-6">
+            {deliveries.length === 0 ? (
+              <div className="col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+                <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 font-medium">{t('no_deliveries_found')}</p>
+                <p className="text-sm text-gray-500 mt-1">{t('adjust_filters_or_create_route')}</p>
+              </div>
+            ) : (
+              deliveries.map((delivery) => (
+                <div key={delivery.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      {getStatusIcon(delivery.status)}
+                      <div>
+                        <h3 className="font-semibold text-gray-900">
+                          {t(delivery.type === 'delivery' ? 'delivery' : 'pickup')} #{delivery.id.slice(0, 8)}
+                        </h3>
+                        <span className={`text-xs ${getPriorityColor(delivery.priority)}`}>
+                          {t('priority')}: {delivery.priority}
+                        </span>
+                      </div>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(delivery.status)}`}>
+                      {t(delivery.status)}
                     </span>
                   </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">{t('address')}</p>
+                      <p className="text-sm text-gray-900">{delivery.address}</p>
+                    </div>
+
+                    {delivery.scheduled_time && (
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">{t('scheduled_time')}</p>
+                        <p className="text-sm text-gray-900">
+                          {new Date(delivery.scheduled_time).toLocaleString()}
+                        </p>
+                      </div>
+                    )}
+
+                    {delivery.weight_kg && (
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">{t('weight')}</p>
+                        <p className="text-sm text-gray-900">{delivery.weight_kg} kg</p>
+                      </div>
+                    )}
+
+                    {delivery.notes && (
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">{t('notes')}</p>
+                        <p className="text-sm text-gray-700 italic">{delivery.notes}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                      {t('view_details')}
+                    </button>
+                  </div>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(delivery.status)}`}>
-                  {delivery.status}
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Address</p>
-                  <p className="text-sm text-gray-900">{delivery.address}</p>
-                </div>
-
-                {delivery.scheduled_time && (
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Scheduled Time</p>
-                    <p className="text-sm text-gray-900">
-                      {new Date(delivery.scheduled_time).toLocaleString()}
-                    </p>
-                  </div>
-                )}
-
-                {delivery.weight_kg && (
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Weight</p>
-                    <p className="text-sm text-gray-900">{delivery.weight_kg} kg</p>
-                  </div>
-                )}
-
-                {delivery.notes && (
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Notes</p>
-                    <p className="text-sm text-gray-700 italic">{delivery.notes}</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                  View Details
-                </button>
-              </div>
-            </div>
-          ))
-        )}
+              ))
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

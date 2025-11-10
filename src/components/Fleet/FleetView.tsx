@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Truck, User, Plus } from 'lucide-react';
 import { supabase, Vehicle, Driver } from '../../lib/supabase';
 
 export const FleetView: React.FC = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'vehicles' | 'drivers'>('vehicles');
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -43,12 +47,15 @@ export const FleetView: React.FC = () => {
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Fleet & Driver Management</h1>
-          <p className="text-gray-600 mt-1">Manage vehicles and driver assignments</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('fleet_driver_management')}</h1>
+          <p className="text-gray-600 mt-1">{t('manage_vehicles_and_drivers')}</p>
         </div>
-        <button className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+        <button
+          onClick={() => navigate(activeTab === 'vehicles' ? '/fleet/vehicles/add' : '/fleet/drivers/add')}
+          className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+        >
           <Plus className="w-5 h-5" />
-          <span>Add {activeTab === 'vehicles' ? 'Vehicle' : 'Driver'}</span>
+          <span>{t('add')} {t(activeTab === 'vehicles' ? 'vehicle' : 'driver')}</span>
         </button>
       </div>
 
@@ -63,7 +70,7 @@ export const FleetView: React.FC = () => {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Vehicles ({vehicles.length})
+              {t('vehicles')} ({vehicles.length})
             </button>
             <button
               onClick={() => setActiveTab('drivers')}
@@ -73,7 +80,7 @@ export const FleetView: React.FC = () => {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Drivers ({drivers.length})
+              {t('drivers')} ({drivers.length})
             </button>
           </nav>
         </div>
@@ -84,8 +91,8 @@ export const FleetView: React.FC = () => {
           {vehicles.length === 0 ? (
             <div className="col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
               <Truck className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 font-medium">No vehicles found</p>
-              <p className="text-sm text-gray-500 mt-1">Add your first vehicle to get started</p>
+              <p className="text-gray-600 font-medium">{t('no_vehicles_found')}</p>
+              <p className="text-sm text-gray-500 mt-1">{t('add_first_vehicle')}</p>
             </div>
           ) : (
             vehicles.map((vehicle) => (
@@ -107,16 +114,16 @@ export const FleetView: React.FC = () => {
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Capacity</span>
+                    <span className="text-gray-600">{t('capacity')}</span>
                     <span className="font-medium text-gray-900">{vehicle.capacity_kg} kg</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Fuel Consumption</span>
+                    <span className="text-gray-600">{t('fuel_consumption')}</span>
                     <span className="font-medium text-gray-900">{vehicle.fuel_consumption_per_km} L/km</span>
                   </div>
                   {vehicle.last_maintenance && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Last Maintenance</span>
+                      <span className="text-gray-600">{t('last_maintenance')}</span>
                       <span className="font-medium text-gray-900">
                         {new Date(vehicle.last_maintenance).toLocaleDateString()}
                       </span>
@@ -125,8 +132,8 @@ export const FleetView: React.FC = () => {
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-100">
-                  <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                    View Details
+                  <button onClick={() => navigate(`/fleet/vehicles/${vehicle.id}`)} className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                    {t('view_details')}
                   </button>
                 </div>
               </div>
@@ -140,22 +147,22 @@ export const FleetView: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Driver
+                    {t('driver')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    License Number
+                    {t('license_number')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    {t('status')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Rating
+                    {t('rating')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Deliveries
+                    {t('total_deliveries')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t('actions')}
                   </th>
                 </tr>
               </thead>
@@ -163,7 +170,7 @@ export const FleetView: React.FC = () => {
                 {drivers.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                      No drivers found. Add your first driver to get started.
+                      {t('no_drivers_found')}
                     </td>
                   </tr>
                 ) : (
@@ -174,7 +181,7 @@ export const FleetView: React.FC = () => {
                           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
                             <User className="w-5 h-5 text-blue-600" />
                           </div>
-                          <span className="font-medium text-gray-900">Driver #{driver.id.slice(0, 8)}</span>
+                          <span className="font-medium text-gray-900">{t('driver')} #{driver.id.slice(0, 8)}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -182,7 +189,7 @@ export const FleetView: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDriverStatusColor(driver.availability_status)}`}>
-                          {driver.availability_status}
+                          {t(driver.availability_status)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -192,7 +199,7 @@ export const FleetView: React.FC = () => {
                         {driver.total_deliveries}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <button className="text-blue-600 hover:text-blue-800 font-medium">View Profile</button>
+                        <button onClick={() => navigate(`/fleet/drivers/${driver.id}`)} className="text-blue-600 hover:text-blue-800 font-medium">{t('view_profile')}</button>
                       </td>
                     </tr>
                   ))

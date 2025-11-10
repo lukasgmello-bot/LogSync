@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TrendingUp, TrendingDown, Package, Truck, DollarSign, Clock } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -15,7 +16,7 @@ const KPICard: React.FC<KPICardProps> = ({ title, value, change, icon, trend }) 
     <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600 mb-2">{title}</p>
+          <p className="text-sm font-medium text-gray-600 mb-2">{t(title.toLowerCase().replace(/ /g, '_'))}</p>
           <h3 className="text-3xl font-bold text-gray-900">{value}</h3>
           {change !== undefined && (
             <div className={`flex items-center space-x-1 mt-2 text-sm ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
@@ -33,6 +34,7 @@ const KPICard: React.FC<KPICardProps> = ({ title, value, change, icon, trend }) 
 };
 
 export const DashboardView: React.FC = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     totalRoutes: 0,
     activeDeliveries: 0,
@@ -77,42 +79,42 @@ export const DashboardView: React.FC = () => {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Welcome back! Here's your operations overview.</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('dashboard')}</h1>
+        <p className="text-gray-600 mt-1">{t('welcome_message')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <KPICard
-          title="Active Routes"
+          title="active_routes"
           value={stats.totalRoutes}
           change={8}
           trend="up"
           icon={<Package className="w-6 h-6" />}
         />
         <KPICard
-          title="Active Deliveries"
+          title="active_deliveries"
           value={stats.activeDeliveries}
           icon={<Package className="w-6 h-6" />}
         />
         <KPICard
-          title="Active Vehicles"
+          title="active_vehicles"
           value={stats.activeVehicles}
           icon={<Truck className="w-6 h-6" />}
         />
         <KPICard
-          title="Avg Delivery Time"
+          title="avg_delivery_time"
           value={`${Math.round(stats.avgDeliveryTime)} min`}
           change={5}
           trend="down"
           icon={<Clock className="w-6 h-6" />}
         />
         <KPICard
-          title="Total Fuel Cost"
+          title="total_fuel_cost"
           value={`$${stats.totalFuelCost.toFixed(2)}`}
           icon={<DollarSign className="w-6 h-6" />}
         />
         <KPICard
-          title="On-Time Rate"
+          title="on_time_rate"
           value={`${stats.onTimeRate.toFixed(1)}%`}
           change={12}
           trend="up"
@@ -122,7 +124,7 @@ export const DashboardView: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('recent_activity')}</h2>
           <div className="space-y-3">
             <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -143,11 +145,11 @@ export const DashboardView: React.FC = () => {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('quick_stats')}</h2>
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-600">Routes Efficiency</span>
+                <span className="text-gray-600">{t('routes_efficiency')}</span>
                 <span className="font-medium text-gray-900">87%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -156,7 +158,7 @@ export const DashboardView: React.FC = () => {
             </div>
             <div>
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-600">Fleet Utilization</span>
+                <span className="text-gray-600">{t('fleet_utilization')}</span>
                 <span className="font-medium text-gray-900">72%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -165,7 +167,7 @@ export const DashboardView: React.FC = () => {
             </div>
             <div>
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-600">Driver Availability</span>
+                <span className="text-gray-600">{t('driver_availability')}</span>
                 <span className="font-medium text-gray-900">64%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
